@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.LinearLayout
 import androidx.navigation.fragment.findNavController
 
 /**
@@ -23,7 +24,14 @@ class FirstFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        val layout = view.findViewById<LinearLayout>(R.id.button_layout)
+        for (g in GameData.core.findAllGames()) {
+            val b = Button(view.context)
+            b.text = g.name
+            b.setOnClickListener { /*TODO: click on the game*/ }
+            val p = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            layout.addView(b, p)
+        }
         view.findViewById<Button>(R.id.button_first).setOnClickListener {
             findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
         }
