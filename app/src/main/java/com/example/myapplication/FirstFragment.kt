@@ -8,11 +8,14 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
 import androidx.navigation.fragment.findNavController
+import androidx.lifecycle.ViewModelProviders
+
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
 class FirstFragment : Fragment() {
+    private var model: Communicator?=null
 
     override fun onCreateView(
             inflater: LayoutInflater, container: ViewGroup?,
@@ -24,16 +27,24 @@ class FirstFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        /* Creation du communicateur pour l'envoi au autres pages */
+        model= ViewModelProviders.of(this.requireActivity()).get(Communicator::class.java)
+
         val layout = view.findViewById<LinearLayout>(R.id.button_layout)
         for (g in GameData.core.findAllGames()) {
             val b = Button(view.context)
             b.text = g.name
-            b.setOnClickListener { /*TODO: click on the game*/ }
+            /* Envoi l'ID du jeu a la page de configuration */
+            b.setOnClickListener {
+                model!!.setMsgGameId(g.id)
+                findNavController().navigate(R.id.action_FirstFragment_to_optionGameFragment)
+            }
             val p = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             layout.addView(b, p)
         }
         view.findViewById<Button>(R.id.button_first).setOnClickListener {
-            findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
+            findNavController().navigate(R.id.action_FirstFragment_to_optionGameFragment)
         }
     }
 }
