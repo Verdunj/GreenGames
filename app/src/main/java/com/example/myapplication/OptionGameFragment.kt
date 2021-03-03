@@ -49,7 +49,7 @@ class OptionGameFragment : Fragment() {
 
             val toast = Toast.makeText(context, "Jeu pas encore implémenté", Toast.LENGTH_LONG)
             view.findViewById<Button>(R.id.button_reprendre).setOnClickListener {
-                toast.show()
+                findNavController().navigate(game.fragmentId)
             }
             view.findViewById<Button>(R.id.button_niveau).setOnClickListener {
                 toast.show()
