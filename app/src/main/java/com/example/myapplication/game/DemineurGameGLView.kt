@@ -6,9 +6,8 @@ import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.opengl.Matrix
 import android.view.MotionEvent
-import androidx.navigation.findNavController
 import com.example.myapplication.DemineurActivity
-import com.example.myapplication.R
+import com.example.myapplication.game.DemineurGame.Companion.DemineurGameMenu
 import java.nio.FloatBuffer
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
@@ -20,40 +19,56 @@ import kotlin.math.min
 class DemineurGameGLView(context: DemineurActivity, demineur: DemineurGame) : GLSurfaceView(context) {
     private val renderer: DemineurGameGLViewRenderer
     init {
-        // TODO: remove that
-        demineur.start()
         // Create an OpenGL ES 2.0 context
         setEGLContextClientVersion(2)
 
-        renderer = DemineurGameGLViewRenderer(demineur, context)
+        renderer = DemineurGameGLViewRenderer(demineur)
 
         // Set the Renderer for drawing on the GLSurfaceView
         setRenderer(renderer)
 
         setOnTouchListener { v, e ->
             if (e.action == MotionEvent.ACTION_DOWN) {
-                // check default buttons
-                if (GLESUtils.isInSquare(e.x.toInt(), e.y.toInt(), width / 2 - renderer.tileSize * 6 / 2, height - renderer.tileSize * 5 / 2,renderer.tileSize * 2)) {
-                    // flag
-                    demineur.digMode = false
-                } else if (GLESUtils.isInSquare(e.x.toInt(), e.y.toInt(), width / 2 - renderer.tileSize * 2 / 2,height - renderer.tileSize * 5 / 2,renderer.tileSize * 2)) {
-                    // pause
-                    context.findNavController(R.id.FirstFragment).navigate(R.id.optionGameFragment)
-                } else if (GLESUtils.isInSquare(e.x.toInt(), e.y.toInt(), width / 2 + renderer.tileSize * 2 / 2,height - renderer.tileSize * 5 / 2,renderer.tileSize * 2)) {
-                    // dig
-                    demineur.digMode = true
-                } else // press on the game
-                    demineur.press(
-                        (e.x.toInt() - renderer.startX) / renderer.tileSize,
-                        (e.y.toInt() - renderer.startY) / renderer.tileSize
-                    )
+                when (demineur.menu) {
+                    DemineurGameMenu.NEW -> {
+                        val diffs = DemineurGame.Companion.DemineurGameDifficulty.values()
+
+                        var top = (renderer.height - renderer.tileSize * diffs.size * 3 / 2) / 2
+                        for (m in diffs) {
+                            if (GLESUtils.isInRec(e.x.toInt(), e.y.toInt(), (renderer.width - renderer.tileSize * m.title.length) / 2, top - renderer.tileSize / 2, renderer.tileSize * m.title.length, renderer.tileSize))
+                                demineur.difficulty = m
+                            top += renderer.tileSize * 3 / 2
+                        }
+
+                        if (GLESUtils.isInRec(e.x.toInt(), e.y.toInt(), (renderer.width - "Lancer".length) / 2, renderer.height - renderer.tileSize * 3 / 2, renderer.tileSize * "Lancer".length, renderer.tileSize))
+                            demineur.start()
+                    }
+                    DemineurGameMenu.INGAME -> {
+                        // check default buttons
+                        if (GLESUtils.isInSquare(e.x.toInt(), e.y.toInt(), renderer.width / 2 - renderer.tileSize * 6 / 2, renderer.height - renderer.tileSize * 5 / 2,renderer.tileSize * 2)) {
+                            // flag
+                            demineur.digMode = false
+                        } else if (GLESUtils.isInSquare(e.x.toInt(), e.y.toInt(), renderer.width / 2 - renderer.tileSize * 2 / 2,renderer.height - renderer.tileSize * 5 / 2,renderer.tileSize * 2)) {
+                            // pause
+                            demineur.menu = DemineurGameMenu.NEW
+                        } else if (GLESUtils.isInSquare(e.x.toInt(), e.y.toInt(), renderer.width / 2 + renderer.tileSize * 2 / 2,renderer.height - renderer.tileSize * 5 / 2,renderer.tileSize * 2)) {
+                            // dig
+                            demineur.digMode = true
+                        } else // press on the game
+                            demineur.press(
+                                    (e.x.toInt() - renderer.startX) / renderer.tileSize,
+                                    (e.y.toInt() - renderer.startY) / renderer.tileSize
+                            )
+
+                    }
+                }
             }
             true
         }
     }
 
     companion object {
-        class DemineurGameGLViewRenderer(private val demineur: DemineurGame, private val mActivityContext: Context) : GLSurfaceView.Renderer {
+        class DemineurGameGLViewRenderer(private val demineur: DemineurGame) : GLSurfaceView.Renderer {
             private val squareVertices = GLESUtils.allocateFloatBuffer(floatArrayOf(
                     // positions
                     0f, 1f, 0.0f, // top left
@@ -73,8 +88,8 @@ class DemineurGameGLView(context: DemineurActivity, demineur: DemineurGame) : GL
             private var mPositionHandle = 0
             private var mTextureCoordinateHandle = 0
             private var mProgramHandle = 0
-            private var width = 1
-            private var height = 1
+            var width = 1
+            var height = 1
 
             private var mTextureDataHandle = 0
             private var mFontTextureDataHandle = 0
@@ -134,60 +149,83 @@ class DemineurGameGLView(context: DemineurActivity, demineur: DemineurGame) : GL
             override fun onDrawFrame(glUnused: GL10?) {
                 GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
 
-                val wr = width / demineur.difficulty.width
-                val hr = height / (demineur.difficulty.height + 6)
-
-                tileSize = min(wr, hr)
-                startX = width / 2 - tileSize * demineur.difficulty.width / 2
-                startY = height / 2 - tileSize * (demineur.difficulty.height) / 2
-
-
                 // enable ALPHA
                 GLES20.glEnable(GLES20.GL_BLEND)
                 GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA)
 
 
-                // render top text
-                GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mFontTextureDataHandle)
-                renderStringCenteredxy(demineur.flag.toString() + " / " + demineur.difficulty.bombs, width / 2, tileSize, tileSize / 2)
-                if (demineur.fini) {
-                    if (demineur.gagne)
-                        renderStringCenteredxy("gagne !", width / 2, tileSize * 2, tileSize / 2)
-                    else
-                        renderStringCenteredxy("perdu !", width / 2, tileSize * 2, tileSize / 2)
-                }
-                GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureDataHandle)
+                when (demineur.menu) {
+                    DemineurGameMenu.NEW -> {
+                        var nm = max("Difficulte".length, "Lancer".length)
+                        val diffs = DemineurGame.Companion.DemineurGameDifficulty.values()
+                        for (m in diffs)
+                            if (m.title.length > nm)
+                                nm = m.title.length
+                        val wr = width / nm
+                        val hr = height / (diffs.size * 3 / 2 + 4)
 
-                for ((x, cc) in demineur.cells.withIndex())
-                    for ((y, c) in cc.withIndex()) {
-                        renderTex(
-                            c.getImageIndex(),
-                            startX + x * tileSize,
-                            startY + y * tileSize,
-                            tileSize,
-                            tileSize
-                        )
-                        // render the bomb on top of the image
-                        if (demineur.fini && !demineur.gagne && c.bomb)
-                            renderTex(
-                                3,
-                                startX + x * tileSize,
-                                startY + y * tileSize,
-                                tileSize,
-                                tileSize
-                            )
+                        tileSize = min(wr, hr)
+
+                        renderStringCenteredxy("Difficulte", width / 2, tileSize, tileSize)
+
+                        var top = (height - tileSize * diffs.size * 3 / 2) / 2
+                        for (m in diffs) {
+                            renderStringCenteredxy(m.title, width / 2, top, tileSize, true, m == demineur.difficulty)
+                            top += tileSize * 3 / 2
+                        }
+
+                        renderStringCenteredxy("Lancer", width / 2, height - tileSize, tileSize, true, false)
+
                     }
+                    DemineurGameMenu.INGAME -> {
+                        val wr = width / demineur.difficulty.width
+                        val hr = height / (demineur.difficulty.height + 6)
 
-                // menu tile
-                renderTex(if(demineur.digMode) 0 else 4, width / 2 - tileSize * 6 / 2, height - tileSize * 5 / 2, tileSize * 2, tileSize * 2)
-                renderTex(0, width / 2 - tileSize * 2 / 2, height - tileSize * 5 / 2, tileSize * 2, tileSize * 2)
-                renderTex(if(demineur.digMode) 4 else 0, width / 2 + tileSize * 2 / 2, height - tileSize * 5 / 2, tileSize * 2, tileSize * 2)
+                        tileSize = min(wr, hr)
+                        startX = width / 2 - tileSize * demineur.difficulty.width / 2
+                        startY = height / 2 - tileSize * (demineur.difficulty.height) / 2
+                        // render top text
+                        renderStringCenteredxy(demineur.flag.toString() + " / " + demineur.difficulty.bombs, width / 2, tileSize, tileSize / 2)
+                        if (demineur.fini) {
+                            if (demineur.gagne)
+                                renderStringCenteredxy("gagne !", width / 2, tileSize * 2, tileSize / 2)
+                            else
+                                renderStringCenteredxy("perdu !", width / 2, tileSize * 2, tileSize / 2)
+                        }
+                        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureDataHandle)
 
-                // menu icon
-                renderTex(13, width / 2 - tileSize * 6 / 2, height - tileSize * 5 / 2, tileSize * 2, tileSize * 2)
-                renderTex(15, width / 2 - tileSize * 2 / 2, height - tileSize * 5 / 2, tileSize * 2, tileSize * 2)
-                renderTex(14, width / 2 + tileSize * 2 / 2, height - tileSize * 5 / 2, tileSize * 2, tileSize * 2)
+                        for ((x, cc) in demineur.cells.withIndex())
+                            for ((y, c) in cc.withIndex()) {
+                                renderTex(
+                                    c.getImageIndex(),
+                                    startX + x * tileSize,
+                                    startY + y * tileSize,
+                                    tileSize,
+                                    tileSize
+                                )
+                                // render the bomb on top of the image
+                                if (demineur.fini && !demineur.gagne && c.bomb)
+                                    renderTex(
+                                        3,
+                                        startX + x * tileSize,
+                                        startY + y * tileSize,
+                                        tileSize,
+                                        tileSize
+                                    )
+                            }
 
+                        // menu tile
+                        renderTex(if(demineur.digMode) 0 else 4, width / 2 - tileSize * 6 / 2, height - tileSize * 5 / 2, tileSize * 2, tileSize * 2)
+                        renderTex(0, width / 2 - tileSize * 2 / 2, height - tileSize * 5 / 2, tileSize * 2, tileSize * 2)
+                        renderTex(if(demineur.digMode) 4 else 0, width / 2 + tileSize * 2 / 2, height - tileSize * 5 / 2, tileSize * 2, tileSize * 2)
+
+                        // menu icon
+                        renderTex(13, width / 2 - tileSize * 6 / 2, height - tileSize * 5 / 2, tileSize * 2, tileSize * 2)
+                        renderTex(15, width / 2 - tileSize * 2 / 2, height - tileSize * 5 / 2, tileSize * 2, tileSize * 2)
+                        renderTex(14, width / 2 + tileSize * 2 / 2, height - tileSize * 5 / 2, tileSize * 2, tileSize * 2)
+
+                    }
+                }
                 // disable ALPHA
                 GLES20.glDisable(GLES20.GL_BLEND)
             }
@@ -197,9 +235,25 @@ class DemineurGameGLView(context: DemineurActivity, demineur: DemineurGame) : GL
                 renderTex(squareTexVertices[index], x, y, w, h)
             }
             private fun renderStringCenteredxy(s: String, x: Int, y: Int, h: Int) {
-                renderString(s, x - s.length * h  / 2, y - h / 2, h)
+                renderStringCenteredxy(s, x, y, h, false, false)
+            }
+            private fun renderStringCenteredxy(s: String, x: Int, y: Int, h: Int, back: Boolean, selected: Boolean) {
+                renderString(s, x - s.length * h  / 2, y - h / 2, h, back, selected)
             }
             private fun renderString(s: String, x: Int, y: Int, h: Int) {
+                renderString(s, x, y, h, false, false)
+            }
+            private fun renderString(s: String, x: Int, y: Int, h: Int, back: Boolean, selected: Boolean) {
+                if (back) {
+                    GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureDataHandle)
+                    val key = if (selected) 0 else 4
+                    var xx = x
+                    for (c in s) {
+                        renderTex(key, xx, y, h, h)
+                        xx += h
+                    }
+                }
+                GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mFontTextureDataHandle)
                 var xx = x
                 for (c in s) {
                     renderChar(c, xx, y, h)

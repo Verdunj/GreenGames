@@ -108,8 +108,11 @@ class GLESUtils {
             return content.toString()
         }
 
+        fun isInRec(mx:Int, my: Int, x: Int, y: Int, w: Int, h: Int): Boolean {
+            return mx >= x && mx <= x + w && my >= y && my <= y + h
+        }
         fun isInSquare(mx:Int, my: Int, x: Int, y: Int, w: Int): Boolean {
-            return mx >= x && mx <= x + w && my >= y && my <= y + w
+            return isInRec(mx, my, x, y, w, w)
         }
     }
 }

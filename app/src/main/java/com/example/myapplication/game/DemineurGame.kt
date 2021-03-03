@@ -16,6 +16,7 @@ class DemineurGame: Game("Demineur", R.id.demineurActivity) {
     var flag = 0
     var difficulty = DemineurGameDifficulty.NORMAL
     var digMode = true
+    var load = false
     lateinit var drawable : BitmapDrawable
     lateinit var fontDrawable : BitmapDrawable
     lateinit var cells : Array<Array<DemineurGameCell>>
@@ -23,6 +24,13 @@ class DemineurGame: Game("Demineur", R.id.demineurActivity) {
 
     fun start() {
         cells = Array(difficulty.width) { Array(difficulty.height) { DemineurGameCell(this) } }
+        menu = DemineurGameMenu.INGAME
+        fini = false
+        gagne = false
+        load = false
+    }
+
+    fun loadMap(sx: Int, sy: Int) {
         // set the bombs
         for (i in 1..difficulty.bombs) {
             var c: DemineurGameCell
@@ -32,7 +40,7 @@ class DemineurGame: Game("Demineur", R.id.demineurActivity) {
                 x = Random.nextInt(difficulty.width)
                 y = Random.nextInt(difficulty.height)
                 c = cells[x][y]
-            } while (c.bomb)
+            } while (c.bomb || (x == sx && y == sy))
             // add to the neighbors
             for (xx in max(0,x-1)..min(difficulty.width-1,x+1))
                 for (yy in max(0,y-1)..min(difficulty.height-1,y+1))
@@ -40,10 +48,8 @@ class DemineurGame: Game("Demineur", R.id.demineurActivity) {
             c.bomb = true
         }
         time = System.currentTimeMillis()
-        menu = DemineurGameMenu.INGAME
-        fini = false
-        gagne = false
         remaining = difficulty.width * difficulty.height - difficulty.bombs
+        load = true
     }
 
     fun loadTex() : Int {
@@ -57,6 +63,10 @@ class DemineurGame: Game("Demineur", R.id.demineurActivity) {
         // out of range or game ended
         if (fini || x < 0 || x >= difficulty.width || y < 0 || y >= difficulty.height)
             return
+        if (!load) {
+            loadMap(x, y)
+        }
+
         val c = cells[x][y]
         // check if the cell is valid
         if (c.userState == DemineurGameCellUser.PRESSED)
@@ -131,7 +141,7 @@ class DemineurGame: Game("Demineur", R.id.demineurActivity) {
         enum class DemineurGameCellUser {
             UNPRESSED,
             FLAG,
-            UNKNOW,
+            UNKNOWN,
             PRESSED
         }
     }
