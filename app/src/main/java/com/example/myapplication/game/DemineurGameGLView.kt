@@ -69,16 +69,7 @@ class DemineurGameGLView(context: DemineurActivity, demineur: DemineurGame) : GL
 
     companion object {
         class DemineurGameGLViewRenderer(private val demineur: DemineurGame) : GLSurfaceView.Renderer {
-            private val squareVertices = GLESUtils.allocateFloatBuffer(floatArrayOf(
-                    // positions
-                    0f, 1f, 0.0f, // top left
-                    0f, 0f, 0.0f, // bottom left
-                    1f, 0f, 0.0f, // bottom right
-                    // 2nd triangle
-                    1f, 0f, 0.0f, // bottom right
-                    1f, 1f, 0.0f, // top right
-                    0f, 1f, 0.0f  // top left
-            ))
+            private val squareVertices = GLESUtils.genSquareVertices()
             private val squareTexVertices = GLESUtils.genSquareTexVertices(4)
             private val fontTexVertices = GLESUtils.genSquareTexVertices(16)
             private val mMVPMatrix = FloatArray(16)
@@ -149,10 +140,7 @@ class DemineurGameGLView(context: DemineurActivity, demineur: DemineurGame) : GL
             override fun onDrawFrame(glUnused: GL10?) {
                 GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
 
-                // enable ALPHA
-                GLES20.glEnable(GLES20.GL_BLEND)
-                GLES20.glBlendFunc(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA)
-
+                GLESUtils.enableAlpha()
 
                 when (demineur.menu) {
                     DemineurGameMenu.NEW -> {
@@ -226,8 +214,7 @@ class DemineurGameGLView(context: DemineurActivity, demineur: DemineurGame) : GL
 
                     }
                 }
-                // disable ALPHA
-                GLES20.glDisable(GLES20.GL_BLEND)
+                GLESUtils.disableAlpha()
             }
 
 
