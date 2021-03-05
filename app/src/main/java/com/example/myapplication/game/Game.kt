@@ -16,21 +16,4 @@ open class Game(_name: String, _fragmentId : Int) {
     val fragmentId = _fragmentId
 
     fun onLoad() {}
-
-    fun loadTextureImage(drawable: BitmapDrawable) : Int {
-        // create texture
-        val textures = IntArray(1){0}
-        GLES20.glGenTextures(1, textures, 0)
-        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textures[0])
-
-        // load pixels
-        val bitmap = drawable.toBitmap()
-        GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0)
-
-        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR)
-        GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR)
-
-        return textures[0]
-    }
-
 }

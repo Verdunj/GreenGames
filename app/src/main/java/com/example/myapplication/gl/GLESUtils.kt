@@ -1,10 +1,9 @@
-package com.example.myapplication.game
+package com.example.myapplication.gl
 
-import android.content.Context
+import android.graphics.drawable.BitmapDrawable
 import android.opengl.GLES20
-import java.io.BufferedReader
-import java.io.IOException
-import java.io.InputStreamReader
+import android.opengl.GLUtils
+import androidx.core.graphics.drawable.toBitmap
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import java.nio.FloatBuffer
@@ -137,6 +136,27 @@ class GLESUtils {
             }
             return programHandle
         }
+
+        /**
+         * load a drawable bitmap into the memory
+         * @param drawable the drawable
+         * @return the texture handler
+         */
+        fun loadTextureImage(drawable: BitmapDrawable) : Int {
+            // create texture
+            val textures = IntArray(1){0}
+            GLES20.glGenTextures(1, textures, 0)
+            GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textures[0])
+
+            // load pixels
+            val bitmap = drawable.toBitmap()
+            GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, bitmap, 0)
+
+            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_LINEAR)
+            GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_LINEAR)
+
+            return textures[0]
+        }
         private fun getShaderResult(shader: Int): String? {
             val s = intArrayOf(0)
             GLES20.glGetShaderiv(shader, GLES20.GL_COMPILE_STATUS, s, 0)
@@ -177,7 +197,7 @@ class GLESUtils {
          * @return the buffer
          */
         fun genSquareVertices(): FloatBuffer {
-            return GLESUtils.allocateFloatBuffer(floatArrayOf(
+            return allocateFloatBuffer(floatArrayOf(
                     // 1st triangle
                     0f, 1f, 0.0f, // top left
                     0f, 0f, 0.0f, // bottom left

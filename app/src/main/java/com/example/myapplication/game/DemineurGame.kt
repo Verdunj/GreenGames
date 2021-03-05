@@ -17,8 +17,6 @@ class DemineurGame: Game("Demineur", R.id.demineurActivity) {
     var difficulty = DemineurGameDifficulty.NORMAL
     var digMode = true
     var load = false
-    lateinit var drawable : BitmapDrawable
-    lateinit var fontDrawable : BitmapDrawable
     lateinit var cells : Array<Array<DemineurGameCell>>
 
 
@@ -52,12 +50,6 @@ class DemineurGame: Game("Demineur", R.id.demineurActivity) {
         load = true
     }
 
-    fun loadTex() : Int {
-        return loadTextureImage(drawable)
-    }
-    fun loadTexFont() : Int {
-        return loadTextureImage(fontDrawable)
-    }
 
     fun press(x: Int, y: Int) {
         // out of range or game ended
