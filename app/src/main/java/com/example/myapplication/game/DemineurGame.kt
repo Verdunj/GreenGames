@@ -46,7 +46,9 @@ class DemineurGame: Game("Demineur", R.id.demineurActivity) {
             c.bomb = true
         }
         time = System.currentTimeMillis()
+        flag = 0
         remaining = difficulty.width * difficulty.height - difficulty.bombs
+        digMode = true
         load = true
     }
 
