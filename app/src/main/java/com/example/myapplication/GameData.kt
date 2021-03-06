@@ -16,6 +16,7 @@ class GameData {
         registerGame(Game("test_2"))
         registerGame(Game("test_3"))
         registerGame(Game("test_4"))
+        registerGame(Game("snake"))
     }
 
     fun registerGame(game : Game) : Unit {
