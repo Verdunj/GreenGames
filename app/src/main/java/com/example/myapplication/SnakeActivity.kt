@@ -8,6 +8,7 @@ import com.example.myapplication.gl.GLESHelperActivity
 import com.example.myapplication.gl.GLESHelperRenderer
 import com.example.myapplication.gl.GLESUtils
 import java.lang.RuntimeException
+import android.content.Context
 import kotlin.math.min
 
 class SnakeActivity : GLESHelperActivity(R.drawable.snake, 5) {
@@ -15,6 +16,8 @@ class SnakeActivity : GLESHelperActivity(R.drawable.snake, 5) {
     private var tileSize = 1
     private var startX = 0
     private var startY = 0
+    private var t = 0L
+
 
     override fun onDraw(glesHelper: GLESHelperRenderer) {
         val width = glesHelper.width
@@ -22,7 +25,7 @@ class SnakeActivity : GLESHelperActivity(R.drawable.snake, 5) {
 
         tileSize = width / "Lancer".length
 
-        println(" "+width+" "+height)
+
         when(snake.menu) {
             SnakeGame.Companion.SnakeGameMenu.NEW -> {
                 //glesHelper.renderStringCenteredxy("Lancer", width / 2, height /2, tileSize, true, false)
@@ -34,23 +37,23 @@ class SnakeActivity : GLESHelperActivity(R.drawable.snake, 5) {
 
 
             } SnakeGame.Companion.SnakeGameMenu.INGAME -> {
-
+            val time = System.currentTimeMillis()
+            if(time>t){
+                snake.update()
+                t=time+snake.wait_time
+            }
+            tileSize=min(width/10,height/15)
+            glesHelper.renderTex(15, snake.pomme.x*tileSize, snake.pomme.y*tileSize, tileSize, tileSize)
+            for(lm in snake.snake){
+                glesHelper.renderTex(lm.imgNb, lm.x*tileSize, lm.y*tileSize, tileSize, tileSize)
+            }
 
             }
         }
-      /*  when (snake.menu) {
-            SnakeGame.Companion.SnakeGameMenu.NEW -> {
-
-            }
-        }*/
     }
 
     override fun onClick(v: View, e: MotionEvent, renderer: GLESHelperRenderer): Boolean {
-        print(e.x.toInt())
-        print(" "+e.y.toInt())
-        print("-------------------------------------------------------------------\n")
-        println(" "+(renderer.width-"Lancer".length/2))
-        println(" "+(renderer.height - tileSize * 3 / 2))
+
         when (snake.menu) {
             SnakeGame.Companion.SnakeGameMenu.NEW -> {
                 if (GLESUtils.isInRec(e.x.toInt(), e.y.toInt(),0,renderer.height /2,tileSize*"Lancer".length,tileSize))
@@ -61,6 +64,25 @@ class SnakeActivity : GLESHelperActivity(R.drawable.snake, 5) {
          }
         return true
         }
+
+    override fun onSwipeUp(renderer: GLESHelperRenderer){
+        snake.mouvement= SnakeGame.Companion.SnakeMoves.HAUT
+
+    }
+
+    override fun onSwipeDown(renderer: GLESHelperRenderer){
+        snake.mouvement= SnakeGame.Companion.SnakeMoves.BAS
+
+    }
+    override fun onSwipeLeft(renderer: GLESHelperRenderer){
+        snake.mouvement= SnakeGame.Companion.SnakeMoves.GAUCHE
+
+
+    }
+    override fun onSwipeRight(renderer: GLESHelperRenderer){
+        snake.mouvement= SnakeGame.Companion.SnakeMoves.DROITE
+
+    }
 
     override fun onInit(renderer: GLESHelperRenderer) {
     }
