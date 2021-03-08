@@ -1,30 +1,39 @@
 package com.example.myapplication
 
+import com.example.myapplication.game.DemineurGame
 import com.example.myapplication.game.Game
 import java.util.*
 import kotlin.collections.HashMap
+import kotlin.reflect.KClass
+import com.example.myapplication.game.SnakeGame
 
 class GameData {
     companion object {
         val core = GameData()
     }
 
-    private val games = HashMap<Int, Game>()
+    private val games = HashMap<KClass<out Game>, Game>()
 
     init {
-        registerGame(Game("test_1"))
-        registerGame(Game("test_2"))
-        registerGame(Game("test_3"))
-        registerGame(Game("test_4"))
-        registerGame(Game("snake"))
+        registerGame(DemineurGame())
+        registerGame(SnakeGame())
     }
 
     fun registerGame(game : Game) : Unit {
-        games.put(game.id, game)
+        games.put(game::class, game)
     }
 
+
+    @Deprecated("Old bad idea, use findGameByClass instead")
     fun findGameById(id : Int) : Game? {
-        return games.get(id)
+        for (g in games.values)
+            if (g.id == id)
+                return g
+        return null
+    }
+
+    fun <T : Game> findGameByClass(cls : KClass<T>) : T? {
+        return games.get(cls) as T?
     }
 
     fun findAllGames() : Collection<Game> {

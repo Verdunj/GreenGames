@@ -38,7 +38,8 @@ class FirstFragment : Fragment() {
             /* Envoi l'ID du jeu a la page de configuration */
             b.setOnClickListener {
                 model!!.setMsgGameId(g.id)
-                findNavController().navigate(R.id.action_FirstFragment_to_optionGameFragment)
+                g.onLoad()
+                findNavController().navigate(g.fragmentId)
             }
             val p = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             layout.addView(b, p)

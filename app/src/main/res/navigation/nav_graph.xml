@@ -23,4 +23,14 @@
             android:id="@+id/action_optionGameFragment_to_FirstFragment"
             app:destination="@id/FirstFragment" />
     </fragment>
+    <activity
+        android:id="@+id/demineurActivity"
+        android:name="com.example.myapplication.DemineurActivity"
+        android:label="activity_demineur"
+        tools:layout="@layout/activity_demineur" />
+    <activity
+        android:id="@+id/snakeActivity"
+        android:name="com.example.myapplication.SnakeActivity"
+        android:label="activity_snake"
+        tools:layout="@layout/activity_snake" />
 </navigation>
