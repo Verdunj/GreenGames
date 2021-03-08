@@ -2,6 +2,7 @@ package com.example.myapplication
 
 import com.example.myapplication.game.DemineurGame
 import com.example.myapplication.game.Game
+import com.example.myapplication.game.SudokuGame
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.reflect.KClass
@@ -16,7 +17,11 @@ class GameData {
 
     init {
         registerGame(DemineurGame())
+
         registerGame(SnakeGame())
+
+        registerGame(SudokuGame())
+
     }
 
     fun registerGame(game : Game) : Unit {

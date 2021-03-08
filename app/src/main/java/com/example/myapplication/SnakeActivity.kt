@@ -62,4 +62,7 @@ class SnakeActivity : GLESHelperActivity(R.drawable.snake, 5) {
         return true
         }
 
+    override fun onInit(renderer: GLESHelperRenderer) {
     }
+
+}

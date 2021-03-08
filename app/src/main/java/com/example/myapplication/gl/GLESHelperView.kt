@@ -7,7 +7,7 @@ import android.view.MotionEvent
 import android.view.View
 
 abstract class GLESHelperView(context: Context, mainTexture: BitmapDrawable, tiles: Int, fontTexture: BitmapDrawable) : GLSurfaceView(context), View.OnTouchListener {
-    internal val renderer = GLESHelperRenderer(mainTexture, tiles, fontTexture, this::drawFunc)
+    internal val renderer = GLESHelperRenderer(mainTexture, tiles, fontTexture, this::drawFunc, this::initFunc)
 
     init {
 
@@ -22,6 +22,7 @@ abstract class GLESHelperView(context: Context, mainTexture: BitmapDrawable, til
 
     abstract fun drawFunc(renderer: GLESHelperRenderer)
     abstract fun clickFunc(v: View, e: MotionEvent): Boolean
+    abstract fun initFunc(renderer: GLESHelperRenderer)
 
     override fun onTouch(v: View, e: MotionEvent): Boolean {
         if (e.action == MotionEvent.ACTION_DOWN && clickFunc(v, e)) {

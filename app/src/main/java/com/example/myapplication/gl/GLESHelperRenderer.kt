@@ -11,9 +11,12 @@ import javax.microedition.khronos.opengles.GL10
 import kotlin.math.max
 import kotlin.math.min
 
-class GLESHelperRenderer(private val mainTexture: BitmapDrawable, tiles: Int, private val fontTexture: BitmapDrawable, private val drawFunct: (GLESHelperRenderer) -> Unit): GLSurfaceView.Renderer {
+class GLESHelperRenderer(private val mainTexture: BitmapDrawable, tiles: Int, private val fontTexture: BitmapDrawable, private val drawFunct: (GLESHelperRenderer) -> Unit, private val initFunct: (GLESHelperRenderer) -> Unit): GLSurfaceView.Renderer {
     var width = 1
     var height = 1
+
+    var fontBackTextureId = 0
+    var fontBackSelectedTextureId = 4
 
     private val mMVPMatrix = FloatArray(16)
     private val mViewMatrix = FloatArray(16)
@@ -82,7 +85,7 @@ class GLESHelperRenderer(private val mainTexture: BitmapDrawable, tiles: Int, pr
     fun renderString(s: String, x: Int, y: Int, h: Int, back: Boolean, selected: Boolean) {
         if (back) {
             GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureDataHandle)
-            val key = if (selected) 0 else 4
+            val key = if (selected) fontBackSelectedTextureId else fontBackTextureId
             var xx = x
             for (c in s) {
                 renderTex(key, xx, y, h, h)
@@ -156,6 +159,7 @@ class GLESHelperRenderer(private val mainTexture: BitmapDrawable, tiles: Int, pr
         this.height = height
         Matrix.orthoM(mViewMatrix, 0, 0f, width.toFloat(), height.toFloat(), 0f, -1f, 1f)
         Matrix.setIdentityM(mModelMatrix, 0)
+        initFunct(this)
     }
     override fun onDrawFrame(gl: GL10?) {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
