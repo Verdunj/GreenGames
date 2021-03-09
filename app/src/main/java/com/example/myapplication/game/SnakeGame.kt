@@ -2,6 +2,7 @@ package com.example.myapplication.game
 
 import com.example.myapplication.R
 import com.example.myapplication.gl.GLESUtils
+import kotlin.math.log
 import kotlin.random.Random
 
 class SnakeGame: Game("Snake", R.id.snakeActivity) {
@@ -9,10 +10,12 @@ class SnakeGame: Game("Snake", R.id.snakeActivity) {
     var menu= SnakeGame.Companion.SnakeGameMenu.NEW
     var snake = mutableListOf<SnakeBody>(SnakeBody(0, 0,14),SnakeBody(1, 0,1), SnakeBody(2, 0,4))
     var mouvement=SnakeMoves.PAUSE
-    var wait_time=100L
-    var pomme = Apple(0,0)
+    var wait_time=200L
+    var pomme = Apple(0,0,15)
     val height = 25
     val width = 20
+    var fruitList = listOf<Int>(15,20)
+    var fruitEaten=0
 
 
     fun start() {
@@ -25,6 +28,10 @@ class SnakeGame: Game("Snake", R.id.snakeActivity) {
         snake.add(SnakeBody(2, 0,4))
         pomme.x= Random.nextInt(width)
         pomme.y= Random.nextInt(height)
+        fruitEaten=0
+        pomme.type=fruitList[Random.nextInt(fruitList.size)]
+        wait_time=200L
+
     }
 
     fun update(){
@@ -51,6 +58,13 @@ class SnakeGame: Game("Snake", R.id.snakeActivity) {
         if(manger_pomme()){
             pomme.x= Random.nextInt(width)
             pomme.y= Random.nextInt(height)
+            pomme.type=fruitList[Random.nextInt(fruitList.size)]
+            fruitEaten++
+            if(wait_time>20) {
+                wait_time = wait_time - (40 / fruitEaten)
+            }
+            println(wait_time)
+            println(fruitEaten)
         }else{
             snake.removeAt(0)
             var tail=snake[0]
@@ -151,7 +165,7 @@ fun manger_pomme():Boolean {
         class SnakeBody(var x: Int, var y: Int, var imgNb: Int){
 
         }
-        class Apple(var x: Int, var y: Int){
+        class Apple(var x: Int, var y: Int,var type: Int){
 
         }
         enum class SnakeMoves(val x:Int,val y:Int,val img:Int) {

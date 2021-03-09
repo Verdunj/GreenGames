@@ -10,6 +10,7 @@ import com.example.myapplication.gl.GLESUtils
 import java.lang.RuntimeException
 import android.content.Context
 import kotlin.math.min
+import kotlin.random.Random
 
 class SnakeActivity : GLESHelperActivity(R.drawable.snake, 5) {
     val snake = GameData.core.findGameByClass(SnakeGame::class) ?: throw RuntimeException("Can't find game")
@@ -44,7 +45,8 @@ class SnakeActivity : GLESHelperActivity(R.drawable.snake, 5) {
                 t=time+snake.wait_time
             }
             tileSize=min(width/snake.width,height/snake.height)
-            glesHelper.renderTex(15, snake.pomme.x*tileSize, snake.pomme.y*tileSize, tileSize, tileSize)
+
+            glesHelper.renderTex(snake.pomme.type, snake.pomme.x*tileSize, snake.pomme.y*tileSize, tileSize, tileSize)
             for(lm in snake.snake){
                 glesHelper.renderTex(lm.imgNb, lm.x*tileSize, lm.y*tileSize, tileSize, tileSize)
             }
