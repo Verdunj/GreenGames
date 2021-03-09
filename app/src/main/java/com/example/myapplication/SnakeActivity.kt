@@ -23,11 +23,12 @@ class SnakeActivity : GLESHelperActivity(R.drawable.snake, 5) {
         val width = glesHelper.width
         val height = glesHelper.height
 
-        tileSize = width / "Lancer".length
+
 
 
         when(snake.menu) {
             SnakeGame.Companion.SnakeGameMenu.NEW -> {
+                tileSize = width / "Lancer".length
                 //glesHelper.renderStringCenteredxy("Lancer", width / 2, height /2, tileSize, true, false)
                 glesHelper.renderString("ance", 1 * tileSize, height / 2, tileSize, 1)
                 glesHelper.renderString("L", 0, height / 2, tileSize, 14)
@@ -57,7 +58,7 @@ class SnakeActivity : GLESHelperActivity(R.drawable.snake, 5) {
         when (snake.menu) {
             SnakeGame.Companion.SnakeGameMenu.NEW -> {
                 if (GLESUtils.isInRec(e.x.toInt(), e.y.toInt(),0,renderer.height /2,tileSize*"Lancer".length,tileSize))
-                    println("j'ai cliqué sur le bouton")
+
                      snake.start()
             }
 
