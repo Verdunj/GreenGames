@@ -28,4 +28,9 @@
         android:name="com.example.myapplication.DemineurActivity"
         android:label="activity_demineur"
         tools:layout="@layout/activity_demineur" />
+    <activity
+        android:id="@+id/sudokuActivity"
+        android:name="com.example.myapplication.SudokuActivity"
+        android:label="activity_sudoku"
+        tools:layout="@layout/activity_sudoku" />
 </navigation>

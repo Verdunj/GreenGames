@@ -16,6 +16,11 @@ class DemineurActivity : GLESHelperActivity(R.drawable.demineur, 4) {
     private var startX = 0
     private var startY = 0
 
+    override fun onInit(renderer: GLESHelperRenderer) {
+        renderer.fontBackSelectedTextureId = 4
+        renderer.fontBackTextureId = 0
+    }
+
     override fun onClick(v: View, e: MotionEvent, renderer: GLESHelperRenderer): Boolean {
         when (demineur.menu) {
             DemineurGame.Companion.DemineurGameMenu.NEW -> {
