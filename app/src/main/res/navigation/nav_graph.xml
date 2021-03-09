@@ -29,8 +29,14 @@
         android:label="activity_demineur"
         tools:layout="@layout/activity_demineur" />
     <activity
+        android:id="@+id/snakeActivity"
+        android:name="com.example.myapplication.SnakeActivity"
+        android:label="activity_snake"
+        tools:layout="@layout/activity_snake" />
+    <activity
         android:id="@+id/sudokuActivity"
         android:name="com.example.myapplication.SudokuActivity"
         android:label="activity_sudoku"
         tools:layout="@layout/activity_sudoku" />
+
 </navigation>

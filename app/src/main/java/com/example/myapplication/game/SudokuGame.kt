@@ -3,7 +3,7 @@ package com.example.myapplication.game
 import com.example.myapplication.R
 import com.example.myapplication.gl.GLESHelperTexturedSquare
 
-class SudokuGame : Game("Soduku", R.id.sudokuActivity) {
+class SudokuGame : Game("Sudoku", R.id.sudokuActivity) {
     val cells = Array(9) {Array(9) {SudokuGameCell()} }
     var selectedCell : SudokuGameCell? = null
     var end = false

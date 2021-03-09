@@ -18,17 +18,32 @@ abstract class GLESHelperActivity(@DrawableRes private val  mainTexture: Int, pr
                 resources.getDrawable(mainTexture, theme) as BitmapDrawable,
                 tiles,
                 resources.getDrawable(R.drawable.font, theme) as BitmapDrawable) {
-            override fun clickFunc(v: View, e: MotionEvent): Boolean {
+            override fun clickFunc(e: MotionEvent): Boolean {
                 for (i in displays.indices.reversed())
                     if (displays[i].click(e.x.toInt(), e.y.toInt()))
                         return true
-                return onClick(v, e, glView.renderer)
+                return onClick(glView, e, glView.renderer)
             }
 
             override fun initFunc(renderer: GLESHelperRenderer) {
                 displays.clear()
                 onInit(renderer)
             }
+
+            override fun onSwipeRight() {
+                onSwipeRight(glView.renderer)
+            }
+
+            override fun onSwipeDown() {
+                onSwipeDown(glView.renderer)
+            }
+            override fun onSwipeLeft() {
+                onSwipeLeft(glView.renderer)
+            }
+            override fun onSwipeUp() {
+                onSwipeUp(glView.renderer)
+            }
+
             override fun drawFunc(renderer: GLESHelperRenderer) {
                 for (d in displays)
                     d.render(renderer)
@@ -62,4 +77,16 @@ abstract class GLESHelperActivity(@DrawableRes private val  mainTexture: Int, pr
     abstract fun onDraw(renderer: GLESHelperRenderer)
     abstract fun onClick(v: View, e: MotionEvent, renderer: GLESHelperRenderer): Boolean
     abstract fun onInit(renderer: GLESHelperRenderer)
+    open fun onSwipeRight(renderer: GLESHelperRenderer){
+
+    }
+    open fun onSwipeDown(renderer: GLESHelperRenderer) {
+
+    }
+    open fun onSwipeLeft(renderer: GLESHelperRenderer) {
+
+    }
+    open fun onSwipeUp(renderer: GLESHelperRenderer) {
+
+    }
 }

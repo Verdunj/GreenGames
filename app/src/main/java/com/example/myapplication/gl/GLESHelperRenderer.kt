@@ -99,6 +99,23 @@ class GLESHelperRenderer(private val mainTexture: BitmapDrawable, tiles: Int, pr
             xx += h
         }
     }
+
+    fun renderString(s: String, x: Int, y: Int, h: Int, key:Int) {
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureDataHandle)
+        var xx = x
+        for (c in s) {
+            renderTex(key, xx, y, h, h)
+            xx += h
+        }
+
+        GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mFontTextureDataHandle)
+        xx = x
+        for (c in s) {
+            renderChar(c, xx, y, h)
+            xx += h
+        }
+    }
+
     fun renderTex(index: Int, x: Int, y: Int, w: Int, h: Int) {
         GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, mTextureDataHandle)
         renderTex(squareTexVertices[index], x, y, w, h)

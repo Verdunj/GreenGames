@@ -33,7 +33,7 @@ class DemineurActivity : GLESHelperActivity(R.drawable.demineur, 4) {
                     top += tileSize * 3 / 2
                 }
 
-                if (GLESUtils.isInRec(e.x.toInt(), e.y.toInt(), (renderer.width - "Lancer".length) / 2, renderer.height - tileSize * 3 / 2, tileSize * "Lancer".length, tileSize))
+                if (GLESUtils.isInRec(e.x.toInt(), e.y.toInt(), (renderer.width - tileSize*"Lancer".length) / 2, renderer.height - tileSize * 3 / 2, tileSize * "Lancer".length, tileSize))
                     demineur.start()
             }
             DemineurGame.Companion.DemineurGameMenu.INGAME -> {

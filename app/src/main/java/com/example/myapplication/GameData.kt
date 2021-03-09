@@ -6,6 +6,7 @@ import com.example.myapplication.game.SudokuGame
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.reflect.KClass
+import com.example.myapplication.game.SnakeGame
 
 class GameData {
     companion object {
@@ -16,7 +17,11 @@ class GameData {
 
     init {
         registerGame(DemineurGame())
+
+        registerGame(SnakeGame())
+
         registerGame(SudokuGame())
+
     }
 
     fun registerGame(game : Game) : Unit {

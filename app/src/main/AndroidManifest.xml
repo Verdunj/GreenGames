@@ -13,8 +13,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MyApplication">
+        <activity android:name=".DemineurActivity"></activity>
+        <activity android:name=".SnakeActivity"></activity>
         <activity android:name=".SudokuActivity"></activity>
-        <activity android:name=".DemineurActivity" />
         <activity
             android:name=".MainActivity"
             android:label="@string/app_name"
