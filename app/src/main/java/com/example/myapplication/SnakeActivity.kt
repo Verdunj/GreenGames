@@ -10,7 +10,6 @@ import com.example.myapplication.gl.GLESUtils
 import java.lang.RuntimeException
 import android.content.Context
 import kotlin.math.min
-import kotlin.random.Random
 
 class SnakeActivity : GLESHelperActivity(R.drawable.snake, 5) {
     val snake = GameData.core.findGameByClass(SnakeGame::class) ?: throw RuntimeException("Can't find game")
@@ -24,9 +23,6 @@ class SnakeActivity : GLESHelperActivity(R.drawable.snake, 5) {
         val width = glesHelper.width
         val height = glesHelper.height
 
-
-
-
         when(snake.menu) {
             SnakeGame.Companion.SnakeGameMenu.NEW -> {
                 tileSize = width / "Lancer".length
@@ -39,18 +35,34 @@ class SnakeActivity : GLESHelperActivity(R.drawable.snake, 5) {
 
 
             } SnakeGame.Companion.SnakeGameMenu.INGAME -> {
-            val time = System.currentTimeMillis()
-            if(time>t){
-                snake.update()
-                t=time+snake.wait_time
-            }
-            tileSize=min(width/snake.width,height/snake.height)
+                val time = System.currentTimeMillis()
+                tileSize=min(width/snake.width,height/snake.height)
+                // draw water
+                var x1 = 0
+                var y1 = 0
+                for(i in 0..snake.height-1){
+                    for(j in 0..snake.width) {
+                        glesHelper.renderTex(21, j * tileSize, i * tileSize, tileSize, tileSize)
+                        x1 = i
+                        y1 = j
+                    }
+                }
+                println("i = $x1 j = $y1")
+                if(time>t){
+                    snake.update()
+                    t=time+snake.wait_time
+                }
 
-            glesHelper.renderTex(snake.pomme.type, snake.pomme.x*tileSize, snake.pomme.y*tileSize, tileSize, tileSize)
-            for(lm in snake.snake){
-                glesHelper.renderTex(lm.imgNb, lm.x*tileSize, lm.y*tileSize, tileSize, tileSize)
-            }
+                glesHelper.renderTex(15, snake.pomme.x*tileSize, snake.pomme.y*tileSize, tileSize, tileSize)
+                for(lm in snake.snake){
+                    glesHelper.renderTex(lm.imgNb, lm.x*tileSize, lm.y*tileSize, tileSize, tileSize)
+                }
 
+                //Pause button
+                glesHelper.renderTex(16, width / 2 - tileSize * 4 / 2, tileSize * snake.height, tileSize * 4, tileSize * 4)
+                // Score
+                var score  = snake.fruitEaten.toString()
+                glesHelper.renderStringCenteredxy(score, width / 2, tileSize * snake.height + tileSize * 8, tileSize * 4)
             }
         }
     }
@@ -59,11 +71,16 @@ class SnakeActivity : GLESHelperActivity(R.drawable.snake, 5) {
 
         when (snake.menu) {
             SnakeGame.Companion.SnakeGameMenu.NEW -> {
-                if (GLESUtils.isInRec(e.x.toInt(), e.y.toInt(),0,renderer.height /2,tileSize*"Lancer".length,tileSize))
-
-                     snake.start()
+                if (GLESUtils.isInRec(e.x.toInt(), e.y.toInt(),0,renderer.height /2,tileSize*"Lancer".length,tileSize)){
+                    snake.start()
+                }
             }
-
+            SnakeGame.Companion.SnakeGameMenu.INGAME -> {
+                if (GLESUtils.isInSquare(e.x.toInt(), e.y.toInt(), renderer.width / 2 - tileSize * 4 / 2, tileSize * snake.height, tileSize*4)) {
+                    // pause
+                    snake.menu = SnakeGame.Companion.SnakeGameMenu.NEW
+                }
+            }
          }
         return true
         }
