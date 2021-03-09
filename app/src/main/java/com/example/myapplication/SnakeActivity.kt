@@ -43,7 +43,7 @@ class SnakeActivity : GLESHelperActivity(R.drawable.snake, 5) {
                 snake.update()
                 t=time+snake.wait_time
             }
-            tileSize=min(width/10,height/15)
+            tileSize=min(width/snake.width,height/snake.height)
             glesHelper.renderTex(15, snake.pomme.x*tileSize, snake.pomme.y*tileSize, tileSize, tileSize)
             for(lm in snake.snake){
                 glesHelper.renderTex(lm.imgNb, lm.x*tileSize, lm.y*tileSize, tileSize, tileSize)

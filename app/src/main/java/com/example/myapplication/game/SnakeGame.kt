@@ -9,8 +9,10 @@ class SnakeGame: Game("Snake", R.id.snakeActivity) {
     var menu= SnakeGame.Companion.SnakeGameMenu.NEW
     var snake = mutableListOf<SnakeBody>(SnakeBody(0, 0,14),SnakeBody(1, 0,1), SnakeBody(2, 0,4))
     var mouvement=SnakeMoves.PAUSE
-    var wait_time=500L
+    var wait_time=100L
     var pomme = Apple(0,0)
+    val height = 25
+    val width = 20
 
 
     fun start() {
@@ -21,8 +23,8 @@ class SnakeGame: Game("Snake", R.id.snakeActivity) {
         snake.add(SnakeBody(0, 0,14))
         snake.add(SnakeBody(1, 0,1))
         snake.add(SnakeBody(2, 0,4))
-        pomme.x= Random.nextInt(10)
-        pomme.y= Random.nextInt(15)
+        pomme.x= Random.nextInt(width)
+        pomme.y= Random.nextInt(height)
     }
 
     fun update(){
@@ -41,14 +43,14 @@ class SnakeGame: Game("Snake", R.id.snakeActivity) {
                 return
             }
         }
-        if(!GLESUtils.isInRec(nv_tete.x,nv_tete.y,0,0,10-1,15-1)){
+        if(!GLESUtils.isInRec(nv_tete.x,nv_tete.y,0,0,width-1,height-1)){
             start()
             return
         }
         snake.add(nv_tete)
         if(manger_pomme()){
-            pomme.x= Random.nextInt(10)
-            pomme.y= Random.nextInt(15)
+            pomme.x= Random.nextInt(width)
+            pomme.y= Random.nextInt(height)
         }else{
             snake.removeAt(0)
             var tail=snake[0]
