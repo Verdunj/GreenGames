@@ -2,6 +2,8 @@ package com.example.myapplication.game
 
 import com.example.myapplication.R
 import com.example.myapplication.gl.GLESHelperTexturedSquare
+import de.sfuhrm.sudoku.Creator
+import de.sfuhrm.sudoku.GameMatrix
 
 class SudokuGame : Game("Sudoku", R.id.sudokuActivity) {
     val cells = Array(9) {Array(9) {SudokuGameCell()} }
@@ -10,74 +12,91 @@ class SudokuGame : Game("Sudoku", R.id.sudokuActivity) {
     var win = false
 
     init {
-        cells[3][3].apply {
-            updatable = false
-            number = 3
-        }
-        cells[2][5].apply {
-            updatable = false
-            number = 6
-        }
+        createGame()
+    }
+
+    fun createGame() {
+        val matrix = Creator.createFull()
+        val riddle = Creator.createRiddle(matrix)!!
+        val arr = riddle.array!!
+        for ((i, ba) in arr?.withIndex())
+            for ((j, a) in ba.withIndex())
+                cells[i][j].apply {
+                    if (a == GameMatrix.UNSET) {
+                        updatable = true
+                        number = 0
+                    } else {
+                        updatable = false
+                        number = a.toInt()
+                    }
+                }
     }
 
     fun checkGameEnd() {
-        //TODO
-        //end = true
-        //win = true|false
-    }
-    // recherche si un chiffre est present sur une ligne
-    fun absentSurLigne(element:Int, l:Int): Boolean{
+        val buffer = IntArray(10) {0}
 
-            for (j in 0..cells.size){
-                if (cells[l][j].number == element)
-                    return false
-            }
-            return true
-    }
-
-    // recherche si un ciffre est present sur la colonne
-    fun absentSurCol(element: Int, c:Int): Boolean {
-        for (i in 0..cells.size){
-            if(cells[i][c].number == element)
-                return false
+        if (
+                checkBlocks(buffer)
+                && checkLines(buffer)
+                && checkCols(buffer)
+        ) {
+            println("win")
+            end = true
+            win = true
         }
-        return true
     }
 
-    //un chiffre absent sur le bloc de 3x3
+    private fun purgeBuffer(buffer: IntArray) {
+        for (i in buffer.indices)
+            buffer[i] = 0
+    }
 
-    fun absentSurBloc(element:Int, l:Int,c:Int): Boolean {
-
-        var initI = l-(l%3)
-        var initJ = c-(c%3)
-        var i = initI
-        var j = initJ
-        var dp = initI+3
-        for(i in initI+3..i+1 ){
-            for(j in initJ..j+1){
-                if(cells[i][j].number == element)
-                    return false
+    private fun checkBlocks(buffer: IntArray): Boolean {
+        for (bi in 0..2) {
+            for (bj in 0..2) {
+                purgeBuffer(buffer)
+                // implicit hack if a block contain a 0
+                buffer[0] = 1
+                for (ii in 0..2)
+                    for (ij in 0..2) {
+                        val i = ii + bi * 3
+                        val j = ij + bj * 3
+                        // already this number on the block
+                        if (++buffer[cells[i][j].number] > 1)
+                            return false
+                    }
             }
         }
         return true
     }
 
-
-
-    // grille valide
-
-    fun validCells(position:Int): Boolean{
-        if(position == 9*9)
-            return true
-        var i= position/9
-        var j= position/9
-        if(cells[i][j].number != 0 )
-            return validCells(position+1)
-        // la suite normalement c'est de verrifier las cases occupée
-        // ensuite verifier toute la grille
-        
+    private fun checkLines(buffer: IntArray): Boolean {
+        for (i in 0..8) {
+            purgeBuffer(buffer)
+            // implicit hack if a line contain a 0
+            buffer[0] = 1
+            for (j in 0..8) {
+                // already this number on the line
+                if (++buffer[cells[i][j].number] > 1)
+                    return false
+            }
+        }
+        return true
     }
 
+    private fun checkCols(buffer: IntArray): Boolean {
+        for (j in 0..8) {
+            purgeBuffer(buffer)
+            // implicit hack if a column contain a 0
+            buffer[0] = 1
+            for (i in 0..8) {
+                // already this number on the column
+                if (++buffer[cells[i][j].number] > 1)
+                    return false
+            }
+        }
+        return true
+    }
 
 
 
