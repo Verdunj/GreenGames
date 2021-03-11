@@ -58,11 +58,12 @@ class SnakeActivity : GLESHelperActivity(R.drawable.snake, 5) {
                     glesHelper.renderTex(lm.imgNb, lm.x*tileSize, lm.y*tileSize, tileSize, tileSize)
                 }
 
-                //Pause button
-                glesHelper.renderTex(16, width / 2 - tileSize * 4 / 2, tileSize * snake.height, tileSize * 4, tileSize * 4)
+
                 // Score
                 var score  = snake.fruitEaten.toString()
-                glesHelper.renderStringCenteredxy(score, width / 2, tileSize * snake.height + tileSize * 8, tileSize * 4)
+                glesHelper.renderStringCenteredxy(score, width / 2, tileSize * snake.height + tileSize*4, tileSize * 4)
+                //Pause button
+                glesHelper.renderTex(16, width / 2 - tileSize * 4 / 2, tileSize * snake.height + tileSize * 8, tileSize * 4, tileSize * 4)
             }
         }
     }
@@ -76,7 +77,7 @@ class SnakeActivity : GLESHelperActivity(R.drawable.snake, 5) {
                 }
             }
             SnakeGame.Companion.SnakeGameMenu.INGAME -> {
-                if (GLESUtils.isInSquare(e.x.toInt(), e.y.toInt(), renderer.width / 2 - tileSize * 4 / 2, tileSize * snake.height, tileSize*4)) {
+                if (GLESUtils.isInSquare(e.x.toInt(), e.y.toInt(), renderer.width / 2 - tileSize * 4 / 2, tileSize * snake.height + tileSize * 8, tileSize * 4)) {
                     // pause
                     snake.menu = SnakeGame.Companion.SnakeGameMenu.NEW
                 }
