@@ -15,7 +15,7 @@ class SnakeGame: Game("Snake", R.id.snakeActivity) {
     val height = 25
     val width = 20
     var fruitList = listOf<Int>(15,20)
-    var fruitEaten=10
+    var fruitEaten=0
 
 
 
@@ -29,7 +29,7 @@ class SnakeGame: Game("Snake", R.id.snakeActivity) {
         snake.add(SnakeBody(2, 0,4))
         pomme.x= Random.nextInt(width)
         pomme.y= Random.nextInt(height)
-        fruitEaten=10
+        fruitEaten=0
         pomme.type=fruitList[Random.nextInt(fruitList.size)]
         wait_time=200L
 
